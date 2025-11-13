@@ -33,7 +33,7 @@
   <header class='appbar'>
     <svg width='28' height='28' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M13 2L3 14h7l-1 8 10-12h-7l1-8z' fill='#fff'/></svg>
     <div><div class='title'>PROGRAMAÇÃO_STC — UTD SERIDÓ</div>
-    <div id='metaUpdate' style='font-size:12px'>Última atualização: 12/11/2025 22:52:34</div></div>
+    <div id='metaUpdate' style='font-size:12px'>Última atualização: 13/11/2025 09:21:44</div></div>
   </header>
   <div class='controls'>
     <select id='filtroEquipe'><option value=''>Todas as equipes</option></select>
@@ -137,7 +137,7 @@
           equipe: d.equipe || '', nota: d.nota || '', tipo: d.tipo || '', venc: d.venc || '', cidade: d.cidade || '', bairro: d.bairro || '', rua: d.rua || '', carga: d.carga || '', de: d.de || '', para: d.para || '', cabocliente: d.cabocliente || '', cabocosern: d.cabocosern || '', disjuntor: d.disjuntor || '', medidor: d.medidor || ''
         });
       });
-      var eqs = Array.from(new Set(data.map(function(x){return x.equipe;}))).filter(function(x){return x && x.trim()!==''}).sort();
+      var eqs = Array.from(new Set(data.map(function(x){return x.equipe;})).values()).filter(function(x){return x && x.trim()!==''}).sort();
       eqs.forEach(function(e){ var o = document.createElement('option'); o.value = e; o.textContent = e; filtro.appendChild(o); });
       function render(){
         cards.innerHTML = '';
@@ -178,7 +178,9 @@
       var modal = document.createElement('div'); modal.className = 'modal';
       var content = document.createElement('div'); content.className = 'modal-content';
       var h = document.createElement('h3'); h.textContent = 'Nota ' + (it.nota||''); content.appendChild(h);
-      function addField(label, value){ if(!value) return; var p=document.createElement('p'); var b=document.createElement('b'); b.textContent=label+': '; p.appendChild(b); p.appendChild(document.createTextNode(value)); content.appendChild(p); }
+      function addField(label, value){
+        if(!value) return; var p = document.createElement('p'); var b = document.createElement('b'); b.textContent = label + ': '; p.appendChild(b); p.appendChild(document.createTextNode(value)); content.appendChild(p);
+      }
       addField('Tipo de Serviço', it.tipo);
       addField('Data de Vencimento', it.venc);
       addField('Cidade', it.cidade);
@@ -192,8 +194,12 @@
       addField('Disjuntor', it.disjuntor);
       addField('Medidor', it.medidor);
       var wrap = document.createElement('div'); wrap.style.textAlign='center'; wrap.style.marginTop='12px';
-      var btnClose = document.createElement('button'); btnClose.className='btn'; btnClose.textContent='Fechar'; btnClose.addEventListener('click', function(){ document.body.removeChild(modal); }); wrap.appendChild(btnClose); content.appendChild(wrap);
-      modal.appendChild(content); modal.addEventListener('click', function(e){ if(e.target===modal) document.body.removeChild(modal); }); document.body.appendChild(modal);
+      var btnClose = document.createElement('button'); btnClose.className='btn'; btnClose.textContent='Fechar';
+      btnClose.addEventListener('click', function(){ document.body.removeChild(modal); });
+      wrap.appendChild(btnClose); content.appendChild(wrap);
+      modal.appendChild(content);
+      modal.addEventListener('click', function(e){ if(e.target === modal) document.body.removeChild(modal); });
+      document.body.appendChild(modal);
     }
     document.addEventListener('DOMContentLoaded', buildCards);
   </script>
