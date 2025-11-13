@@ -1,0 +1,202 @@
+﻿<!doctype html>
+<html lang='pt-BR'>
+<head>
+  <meta charset='utf-8'/>
+  <meta name='viewport' content='width=device-width,initial-scale=1'/>
+  <title>PROGRAMAÇÃO_STC</title>
+  <style>
+    body{font-family:Inter,Segoe UI,Arial,sans-serif;background:#f4f6f8;margin:0;color:#111}
+    .app{max-width:980px;margin:auto;padding-bottom:50px}
+    header.appbar{background:#0b8457;color:#fff;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom-left-radius:12px;border-bottom-right-radius:12px}
+    .title{font-weight:700;font-size:16px}
+    .controls{display:flex;gap:8px;align-items:center;margin:12px 14px 6px}
+    .controls select,.controls input{padding:8px 10px;border-radius:10px;border:1px solid #ccc;font-size:14px}
+    .count{margin-left:auto;font-weight:bold;color:#555}
+    .cardsWrap{padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+    .card{background:#fff;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.1);padding:12px;display:flex;flex-direction:column;gap:8px}
+    .cardFooter{display:flex;justify-content:space-between;align-items:center}
+    .btn{padding:6px 10px;border:none;border-radius:8px;background:#0b8457;color:#fff;font-weight:bold;cursor:pointer}
+    .btn.ghost{background:#fff;border:1px solid #0b8457;color:#0b8457}
+    .dateStatus.due{background:#e85a4f;color:#fff;padding:4px 8px;border-radius:8px}
+    .dateStatus.next{background:#f2c94c;color:#3b2b00;padding:4px 8px;border-radius:8px}
+    .pill{background:#eef3f2;padding:5px 8px;border-radius:12px;font-size:12px}
+    .fields{display:flex;flex-wrap:wrap;gap:5px}
+    .addr{font-size:13px;color:#333}
+    .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+    .modal-content{background:#fff;padding:20px;border-radius:10px;max-width:460px;width:94%;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+    .modal h3{margin-top:0;color:#0b8457}
+    .modal p{margin:6px 0;font-size:14px}
+  </style>
+</head>
+<body>
+<div class='app'>
+  <header class='appbar'>
+    <svg width='28' height='28' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M13 2L3 14h7l-1 8 10-12h-7l1-8z' fill='#fff'/></svg>
+    <div><div class='title'>PROGRAMAÇÃO_STC — UTD SERIDÓ</div>
+    <div id='metaUpdate' style='font-size:12px'>Última atualização: 12/11/2025 22:52:34</div></div>
+  </header>
+  <div class='controls'>
+    <select id='filtroEquipe'><option value=''>Todas as equipes</option></select>
+    <input id='qSearch' type='search' placeholder='Pesquisar: nota, cidade...' />
+    <div class='count' id='contadorTotal'>Total: 0</div>
+  </div>
+  <div id='cards' class='cardsWrap'></div>
+  <div id='empty' style='display:none;text-align:center;color:#888;padding:20px'>Nenhuma nota encontrada.</div>
+  <div style='display:none'><table id='tblNotas'><tbody>
+<tr data-equipe='CCO0806' data-nota='.' data-tipo='CORTE' data-venc='13/11/2025' data-cidade='CAICO' data-bairro='' data-rua='' data-carga='' data-de='' data-para='' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='CCO0808' data-nota='.' data-tipo='CORTE' data-venc='13/11/2025' data-cidade='CAICO' data-bairro='' data-rua='' data-carga='' data-de='' data-para='' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='CCO0906' data-nota='.' data-tipo='INSPEÇÃO' data-venc='13/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='' data-rua='' data-carga='' data-de='' data-para='' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='CNO0751' data-nota='4801255264' data-tipo='Microgeração BT' data-venc='13/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='ALTO DE SANTA RITA' data-rua='RUA ANTONIO BEZERRA DE ARAUJO 62' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0751' data-nota='4501972489' data-tipo='Reativação BT' data-venc='17/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='ALTO DE SANTA RITA' data-rua='RUA HERMES ALBINO DE FREITAS 265' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0751' data-nota='4501981990' data-tipo='Ligação Nova BT' data-venc='14/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='CENTRO' data-rua='RUA LULA GOMES 351' data-carga='6' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0751' data-nota='4501976370' data-tipo='Ligação Nova BT' data-venc='14/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='CENTRO' data-rua='RUA PREFEITO QUINTINO GALVAO 166' data-carga='6' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0751' data-nota='4801255200' data-tipo='Microgeração BT' data-venc='13/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='CORONEL MANOEL SALUSTINO' data-rua='RUA VEREADOR JOSE SALES SOBRINHO 305' data-carga='APP' data-de='' data-para='' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0751' data-nota='4801258105' data-tipo='Microgeração BT' data-venc='17/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='DOUTOR SILVIO BEZERRA DE MELO' data-rua='AV PRESIDENTE GETULIO VARGAS 2285, CS- 177' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0751' data-nota='4801258086' data-tipo='Microgeração BT' data-venc='17/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='GOV RADIR PEREIRA DE ARAUJO' data-rua='RUA JOSE VICTOR DAMIAO MEDEIROS SANTOS 200' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0751' data-nota='4501981019' data-tipo='Reativação BT' data-venc='14/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='JK' data-rua='RUA LUIZ JANILSON 209' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0811' data-nota='.' data-tipo='DESLIGAR STAR CONECT - APP' data-venc='13/11/2025' data-cidade='' data-bairro='' data-rua='' data-carga='' data-de='' data-para='' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='CNO0751' data-nota='4501978596' data-tipo='Reativação BT - APP' data-venc='13/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='CENTRO' data-rua='RUA MAJOR SERVULO 93' data-carga='APP' data-de='' data-para='' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0811' data-nota='4901040626' data-tipo='Desligamento Definitivo a Pedido - BT' data-venc='24/10/2025' data-cidade='TENENTE LAURENTINO CRUZ' data-bairro='ZONA RURAL' data-rua='SI LAGOA 6000' data-carga='' data-de='TRIF' data-para='TRIF' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='CNO0811' data-nota='4501978663' data-tipo='Ligação Nova BT' data-venc='14/11/2025' data-cidade='TENENTE LAURENTINO CRUZ' data-bairro='ZONA RURAL' data-rua='SI BOA VISTA 590' data-carga='19' data-de='TRIF' data-para='TRIF' data-cabocliente='' data-cabocosern='10mm AL' data-disjuntor='32(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0811' data-nota='4501978710' data-tipo='Ligação Nova BT' data-venc='18/11/2025' data-cidade='TENENTE LAURENTINO CRUZ' data-bairro='ZONA RURAL' data-rua='SI BAIXA DO SITIO 195' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0811' data-nota='4501976374' data-tipo='Ligação Nova BT' data-venc='14/11/2025' data-cidade='SAO VICENTE' data-bairro='CENTRO' data-rua='PC JOAQUIM ARAUJO FILHO 19' data-carga='10' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0811' data-nota='4801253044' data-tipo='Microgeração BT' data-venc='17/11/2025' data-cidade='SAO VICENTE' data-bairro='ZONA RURAL' data-rua='SI VACA BRAVA 100' data-carga='' data-de='TRIF' data-para='TRIF' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='CNO0811' data-nota='4601490224' data-tipo='Mudar Local de Medidor' data-venc='17/11/2025' data-cidade='SAO VICENTE' data-bairro='ZONA RURAL' data-rua='SI BOA SORTE 30' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='CNO0811' data-nota='4501979793' data-tipo='Ligação Nova BT MUC' data-venc='18/11/2025' data-cidade='SAO VICENTE' data-bairro='CENTRO' data-rua='RUA CARLOS GOMES 91, LJ-91' data-carga='' data-de='TRIF' data-para='TRIF' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='PLH0789' data-nota='4801255211' data-tipo='Microgeração BT' data-venc='13/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='PARQUE DOURADO' data-rua='RUA BEATRIZ DE MELO LULA 99' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0789' data-nota='4501969652' data-tipo='Reativação BT' data-venc='13/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='PARQUE DOURADO' data-rua='AV MAESTRO FELINTO LUCIO 281' data-carga='3' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0789' data-nota='4501974982' data-tipo='Reativação BT' data-venc='14/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='PARQUE DOURADO' data-rua='AV MAESTRO FELINTO LUCIO 308' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0789' data-nota='4501980089' data-tipo='Reativação BT' data-venc='14/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='SANTA MARIA GORETE' data-rua='RUA VIGARIO MANOEL JOAQUIM 32' data-carga='6' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0789' data-nota='4601496269' data-tipo='Mudar Local de Medidor' data-venc='17/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='SANTA MARIA GORETE' data-rua='RUA JOSE BENTO DE SOUZA 99' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0789' data-nota='4801255193' data-tipo='Microgeração BT' data-venc='13/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='DOUTOR JOSE BEZERRA' data-rua='RUA RIACHO DAS QUEIMADAS 67' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0789' data-nota='4801255207' data-tipo='Microgeração BT' data-venc='13/11/2025' data-cidade='CURRAIS NOVOS' data-bairro='ZONA RURAL' data-rua='RO BR 427 482' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0809' data-nota='4601505612' data-tipo='Alteração Contratual' data-venc='13/11/2025' data-cidade='JARDIM DO SERIDO' data-bairro='NOVO HORIZONTE' data-rua='RUA JUVENCIO CUNHA 189' data-carga='74,97' data-de='TRIF' data-para='TRIF' data-cabocliente='50XLPE ou 70PVC' data-cabocosern='50 ou 70mm AL' data-disjuntor='125(A)' data-medidor='MD200A'></tr>
+<tr data-equipe='PLH0809' data-nota='4601490235' data-tipo='Substituir Ramal' data-venc='17/11/2025' data-cidade='JARDIM DO SERIDO' data-bairro='BANDEIRA BRANCA' data-rua='RUA TENENTE UMBELINO 113' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0809' data-nota='4901039234' data-tipo='Desligamento Definitivo a Pedido - BT' data-venc='17/11/2025' data-cidade='JARDIM DO SERIDO' data-bairro='BELA VISTA' data-rua='RUA AZEMIR RAMOS 164' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0809' data-nota='4901037231' data-tipo='Desligamento Definitivo a Pedido - BT' data-venc='17/11/2025' data-cidade='JARDIM DO SERIDO' data-bairro='CENTRO' data-rua='RUA DOUTOR HERACLIO PIRES 837' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0809' data-nota='4901042708' data-tipo='Desligamento Definitivo a Pedido - BT' data-venc='19/11/2025' data-cidade='JARDIM DO SERIDO' data-bairro='CACIMBA VELHA' data-rua='SI CACIMBA VELHA 25' data-carga='' data-de='TRIF' data-para='TRIF' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='PLH0809' data-nota='4100486209' data-tipo='Aferição Medição BT - Cliente' data-venc='09/12/2025' data-cidade='JARDIM DO SERIDO' data-bairro='SAO JOAO' data-rua='RUA JOSE DE MEDEIROS BRITTO 118' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0809' data-nota='4801258110' data-tipo='Microgeração BT' data-venc='13/11/2025' data-cidade='PARELHAS' data-bairro='COHAB' data-rua='RUA RAIMUNDO DUARTE 29' data-carga='APP' data-de='' data-para='' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0809' data-nota='4801258147' data-tipo='Microgeração BT' data-venc='13/11/2025' data-cidade='PARELHAS' data-bairro='ZONA RURAL' data-rua='SI CACHOEIRA 245' data-carga='' data-de='TRIF' data-para='TRIF' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='PLH0809' data-nota='4601505620' data-tipo='Alteração Contratual' data-venc='14/11/2025' data-cidade='PARELHAS' data-bairro='CENTRO' data-rua='AV DOUTOR MAURO MEDEIROS 167' data-carga='2,84' data-de='MONO' data-para='TRIF' data-cabocliente='' data-cabocosern='10mm AL' data-disjuntor='32(A)' data-medidor=''></tr>
+<tr data-equipe='PLH0809' data-nota='4901035839' data-tipo='Desligamento Definitivo a Pedido - BT' data-venc='14/11/2025' data-cidade='PARELHAS' data-bairro='IVAN BEZERRA' data-rua='RUA SEBASTIAO MEDEIROS 1051' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='STU0775' data-nota='4501979148' data-tipo='Ligação Nova BT' data-venc='13/11/2025' data-cidade='JACANA' data-bairro='CENTRO' data-rua='RUA JOAO FERNANDES DA SILVA 278' data-carga='10' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='STU0775' data-nota='4501973312' data-tipo='Ligação Nova BT' data-venc='13/11/2025' data-cidade='JACANA' data-bairro='CENTRO' data-rua='RUA JOSE GREGORIO 575' data-carga='8' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='STU0775' data-nota='4501979140' data-tipo='Ligação Nova BT' data-venc='13/11/2025' data-cidade='JACANA' data-bairro='ZONA RURAL' data-rua='SI FLORES 849' data-carga='5' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='STU0775' data-nota='4501981556' data-tipo='Reativação BT' data-venc='18/11/2025' data-cidade='JACANA' data-bairro='CENTRO' data-rua='RUA SEVERINO MARQUES DO VALE 40' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='STU0775' data-nota='4501977728' data-tipo='Ligação Nova BT' data-venc='18/11/2025' data-cidade='JACANA' data-bairro='FLORES' data-rua='LG BAIXA DAS FLORES 92' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='STU0775' data-nota='4601502989' data-tipo='Alteração Contratual' data-venc='14/11/2025' data-cidade='CORONEL EZEQUIEL' data-bairro='TROCO' data-rua='PO TRONCO 22' data-carga='6' data-de='TRIF' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='STU0775' data-nota='4501980624' data-tipo='Ligação Nova BT' data-venc='18/11/2025' data-cidade='CORONEL EZEQUIEL' data-bairro='CENTRO' data-rua='RUA MONSENHOR SEVERINO 97' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4801253254' data-tipo='Microgeração BT' data-venc='13/11/2025' data-cidade='CAICO' data-bairro='SERROTE BRANCO' data-rua='AV EDEINA ALADIM 91' data-carga='' data-de='TRIF' data-para='TRIF' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4501976345' data-tipo='Reativação BT' data-venc='13/11/2025' data-cidade='CAICO' data-bairro='ALTO DA BOA VISTA' data-rua='AV DOUTOR RUI MARIZ 480' data-carga='12' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4601495274' data-tipo='Alteração Contratual' data-venc='13/11/2025' data-cidade='CAICO' data-bairro='ALTO DA BOA VISTA' data-rua='RUA JORNALISTA SEVERINO F DE MEDEIRO 1050' data-carga='' data-de='MONO' data-para='TRIF' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4501974950' data-tipo='Ligação Nova BT' data-venc='13/11/2025' data-cidade='CAICO' data-bairro='BOA PASSAGEM' data-rua='RUA FRANCISCO SOARES CUNHA 42' data-carga='10' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4501978638' data-tipo='Ligação Nova BT MUC' data-venc='13/11/2025' data-cidade='CAICO' data-bairro='PENEDO' data-rua='AV CORONEL MARTINIANO 1900, LJ-ADVOCAC' data-carga='' data-de='TRIF' data-para='TRIF' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4801256115' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='CAICO' data-bairro='BARRA NOVA' data-rua='RUA LUDUGERO AVELINO DE SOUZA 106' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4801253355' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='CAICO' data-bairro='CASTELO BRANCO' data-rua='RUA ANA EDITE DE MEDEIROS 115' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4801253031' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='CAICO' data-bairro='CENTRO' data-rua='RUA GENERINA VALE 1470' data-carga='' data-de='TRIF' data-para='TRIF' data-cabocliente='' data-cabocosern='' data-disjuntor='' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4801253333' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='CAICO' data-bairro='SAMANAU' data-rua='RUA MANOEL EVASIO DE MEDEIROS 220' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4801256109' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='CAICO' data-bairro='SAMANAU' data-rua='RUA SULIVAN MEDEIROS 614' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4801256129' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='CAICO' data-bairro='SERROTE BRANCO' data-rua='RUA PEDRO CECILIO PEREIRA JUNIOR 104' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4801256158' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='CAICO' data-bairro='SERROTE BRANCO' data-rua='RUA SEVERINO ALVES DOS SANTOS 305' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_CCO1' data-nota='4801253341' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='CAICO' data-bairro='WALFREDO GURGEL' data-rua='RUA VENICE DINIZ 46' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4801255203' data-tipo='Microgeração BT' data-venc='13/11/2025' data-cidade='SANTA CRUZ' data-bairro='DNER' data-rua='AG MOTORISTA JOSE BRANDAO DANTAS 74' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4601491144' data-tipo='Substituir Ramal' data-venc='13/11/2025' data-cidade='SANTA CRUZ' data-bairro='CENTRO' data-rua='RUA JOSE CAMINHA FIUZA 240' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4601502963' data-tipo='Alteração Contratual' data-venc='13/11/2025' data-cidade='SANTA CRUZ' data-bairro='CENTRO' data-rua='VI OPERARIA 29' data-carga='10' data-de='TRIF' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4501974933' data-tipo='Ligação Nova BT' data-venc='13/11/2025' data-cidade='SANTA CRUZ' data-bairro='MARACUJA' data-rua='RUA ANTONIO VICENTE DE LIMA 345' data-carga='10' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4501979667' data-tipo='Ligação Nova BT' data-venc='13/11/2025' data-cidade='SANTA CRUZ' data-bairro='PARAISO' data-rua='RUA BASILIO PEREIRA DOS SANTOS 245' data-carga='10' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4601497500' data-tipo='Alteração Contratual' data-venc='13/11/2025' data-cidade='SANTA CRUZ' data-bairro='PARAISO' data-rua='RUA HEBERT DIEGO ASSANSOUZA DA SILVA 22' data-carga='49,5' data-de='TRIF' data-para='TRIF' data-cabocliente='16XLPE ou 25PVC' data-cabocosern='35mm AL' data-disjuntor='80(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4501978131' data-tipo='Ligação Nova BT' data-venc='13/11/2025' data-cidade='SANTA CRUZ' data-bairro='ZONA RURAL' data-rua='SI PEDRA 30' data-carga='10' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4801256175' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='SANTA CRUZ' data-bairro='MARACUJA' data-rua='RUA FRANCISCO SILVESTRE DA SILVA 333' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4801256183' data-tipo='Microgeração BT' data-venc='14/11/2025' data-cidade='SANTA CRUZ' data-bairro='ZONA RURAL' data-rua='SI SANTO ANTONIO 71' data-carga='' data-de='MONO' data-para='MONO' data-cabocliente='' data-cabocosern='16mm AL' data-disjuntor='63(A)' data-medidor=''></tr>
+<tr data-equipe='TLL_STU1' data-nota='4501977672' data-tipo='Reativação BT' data-venc='14/11/2025' data-cidade='SANTA CRUZ' data-bairro='BARRO VERMELHO' data-rua='RUA ALFREDO JUSTINO DANTAS 52' data-carga='10' data-de='MONO' data-para='MONO' data-cabocliente='N/A' data-cabocosern='10mm AL' data-disjuntor='40(A)' data-medidor=''></tr>
+
+  </tbody></table></div>
+  <script>
+    function textOr(v){ return v?String(v).trim():''; }
+    function parseDateFriendly(s){
+      if(!s) return {cls:'',label:''};
+      var p = s.split('/'); if(p.length!=3) return {cls:'',label:s};
+      var d = new Date(parseInt(p[2],10), parseInt(p[1],10)-1, parseInt(p[0],10));
+      var today = new Date(); today.setHours(0,0,0,0);
+      var diff = Math.round((d - today)/(1000*60*60*24));
+      if(diff===0) return {cls:'due',label:'Hoje - '+s};
+      if(diff===1) return {cls:'next',label:'Amanhã - '+s};
+      return {cls:'',label:s};
+    }
+    function buildCards(){
+      var rows = document.querySelectorAll('#tblNotas tbody tr');
+      var cards = document.getElementById('cards');
+      var filtro = document.getElementById('filtroEquipe');
+      var search = document.getElementById('qSearch');
+      var contador = document.getElementById('contadorTotal');
+      var data = [];
+      rows.forEach(function(tr){
+        var d = tr.dataset;
+        data.push({
+          equipe: d.equipe || '', nota: d.nota || '', tipo: d.tipo || '', venc: d.venc || '', cidade: d.cidade || '', bairro: d.bairro || '', rua: d.rua || '', carga: d.carga || '', de: d.de || '', para: d.para || '', cabocliente: d.cabocliente || '', cabocosern: d.cabocosern || '', disjuntor: d.disjuntor || '', medidor: d.medidor || ''
+        });
+      });
+      var eqs = Array.from(new Set(data.map(function(x){return x.equipe;}))).filter(function(x){return x && x.trim()!==''}).sort();
+      eqs.forEach(function(e){ var o = document.createElement('option'); o.value = e; o.textContent = e; filtro.appendChild(o); });
+      function render(){
+        cards.innerHTML = '';
+        var q = (search.value||'').toLowerCase();
+        var sel = filtro.value;
+        data.forEach(function(it){
+          if(sel && it.equipe !== sel) return;
+          var hay = (it.nota + ' ' + it.tipo + ' ' + it.cidade + ' ' + it.rua + ' ' + it.bairro + ' ' + it.equipe).toLowerCase();
+          if(q && hay.indexOf(q) === -1) return;
+          var d = parseDateFriendly(it.venc);
+          var card = document.createElement('div'); card.className = 'card';
+          var top = document.createElement('div'); top.innerHTML = '<b>' + (it.nota||'—') + '</b><br><small>' + (it.tipo||'') + '</small>';
+          var addr = document.createElement('div'); addr.className = 'addr'; addr.innerHTML = '<strong>' + (it.cidade||'') + '</strong> • ' + (it.bairro||'') + '<br>' + (it.rua||'');
+          var fields = document.createElement('div'); fields.className = 'fields';
+          var equepill = document.createElement('div'); equepill.className='pill'; equepill.textContent='Equipe: ' + (it.equipe||'—');
+          var deparpill = document.createElement('div'); deparpill.className='pill'; deparpill.textContent = (it.de||'') + ' > ' + (it.para||'');
+          var cargapill = document.createElement('div'); cargapill.className='pill'; cargapill.textContent = 'Carga: ' + (it.carga||'—');
+          fields.appendChild(equepill); fields.appendChild(deparpill); fields.appendChild(cargapill);
+          var foot = document.createElement('div'); foot.className = 'cardFooter';
+          var dt = document.createElement('div'); dt.className = 'dateStatus ' + (d.cls||''); dt.textContent = d.label || it.venc || 'Sem data';
+          var act = document.createElement('div');
+          var ver = document.createElement('button'); ver.className = 'btn ghost'; ver.textContent = 'Ver';
+          ver.addEventListener('click', function(){ showModal(it); });
+          var conc = document.createElement('button'); conc.className = 'btn'; conc.textContent = 'Concluída';
+          conc.addEventListener('click', function(){ card.style.transition='opacity .22s ease'; card.style.opacity='0.25'; setTimeout(function(){ card.remove(); updateCount(); }, 220); });
+          act.appendChild(ver); act.appendChild(conc);
+          foot.appendChild(dt); foot.appendChild(act);
+          card.appendChild(top); card.appendChild(addr); card.appendChild(fields); card.appendChild(foot);
+          cards.appendChild(card);
+        });
+        updateCount();
+        document.getElementById('empty').style.display = (document.querySelectorAll('#cards .card').length ? 'none' : 'block');
+      }
+      function updateCount(){ document.getElementById('contadorTotal').textContent = 'Total: ' + document.querySelectorAll('#cards .card').length; }
+      filtro.addEventListener('change', render); search.addEventListener('input', render); render();
+    }
+    function showModal(it){
+      var modal = document.createElement('div'); modal.className = 'modal';
+      var content = document.createElement('div'); content.className = 'modal-content';
+      var h = document.createElement('h3'); h.textContent = 'Nota ' + (it.nota||''); content.appendChild(h);
+      function addField(label, value){ if(!value) return; var p=document.createElement('p'); var b=document.createElement('b'); b.textContent=label+': '; p.appendChild(b); p.appendChild(document.createTextNode(value)); content.appendChild(p); }
+      addField('Tipo de Serviço', it.tipo);
+      addField('Data de Vencimento', it.venc);
+      addField('Cidade', it.cidade);
+      addField('Bairro', it.bairro);
+      addField('Rua', it.rua);
+      addField('Carga', it.carga);
+      addField('De', it.de);
+      addField('Para', it.para);
+      addField('Cabo Cliente', it.cabocliente);
+      addField('Cabo Cosern', it.cabocosern);
+      addField('Disjuntor', it.disjuntor);
+      addField('Medidor', it.medidor);
+      var wrap = document.createElement('div'); wrap.style.textAlign='center'; wrap.style.marginTop='12px';
+      var btnClose = document.createElement('button'); btnClose.className='btn'; btnClose.textContent='Fechar'; btnClose.addEventListener('click', function(){ document.body.removeChild(modal); }); wrap.appendChild(btnClose); content.appendChild(wrap);
+      modal.appendChild(content); modal.addEventListener('click', function(e){ if(e.target===modal) document.body.removeChild(modal); }); document.body.appendChild(modal);
+    }
+    document.addEventListener('DOMContentLoaded', buildCards);
+  </script>
+</div>
+</body>
+</html>
